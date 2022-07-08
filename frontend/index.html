@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Data Protection</title>
+</head>
+<body>
+	<script type="text/javascript">
+		var	object_id = Date.now();
+		alert(object_id);
+	</script>
+
+	<section>
+		<div>
+			<form>
+				<!--File Upload-->
+				<div>
+					<div>
+						<label>Upload File</label>
+					</div>
+					<div>
+						<label>File:</label>
+					</div>
+					<div>
+						<input type="file" id="myfile" name="myfile">
+					</div>
+				</div>
+
+				<!--Policy-->
+				<div>
+					<div>
+						<label>Raid:</label>
+					</div>
+					<div>
+						<select>
+							<option>RAID0</option>
+							<option>RAID1</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<input type="submit" value="Upload File">
+				</div>
+			</form>
+			<br>
+			<form>
+
+				<!--Object ID-->
+				<div>
+					<div>
+						<label>Download File</label>
+					</div>
+					<div>
+						<label>Object ID:</label>
+					</div>
+					<div>
+						<input type="text" name="Name">
+					</div>
+				</div>
+				<div>
+					<input type="submit" value="Download">
+				</div>
+			</form>
+				<br>
+			<form>
+
+				<!--File Update-->
+				<div>
+					<div>
+						<label>Update File</label>
+					</div>
+					<div>
+						<label>Object ID:</label>
+					</div>
+					<div>
+						<input type="text" name="Name">
+					</div>
+					<div>
+						<input type="file" id="myfile" name="myfile">
+					</div>
+				</div>
+				<div>
+					<input type="submit" value="Update">
+				</div>
+			</form>
+				<br>
+			<form>
+
+				<!--Query Layout-->
+				<div>
+					<div>
+						<label>Query Layout</label>
+					</div>
+					<div>
+						<label>Object ID:</label>
+					</div>
+					<div>
+						<input type="text" name="Name">
+					</div>
+				</div>
+				<div>
+					<input type="submit" value="Query">
+				</div>
+			</form>
+		</div>
+	</section>
+
+</body>
+</html>
