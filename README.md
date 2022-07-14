@@ -5,6 +5,7 @@ Data protection is more and more essential which can protect and backup data aut
 However, the idea of that is hard to understand from scratch. With this chance, we would like to develop a very simple policy-driven data protection system to let everyone easily get familiar with the idea of that.
 
 So, we would like to implement a policy-driven data protection system with the following
+
 - Open source a very simple but clear policy-driven data protection system
 - A back-end to make sure we won't lose data if any computer/host is down
 - A back-end that users can upload and store objects regarding policies
