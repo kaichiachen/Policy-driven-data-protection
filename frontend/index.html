@@ -5,8 +5,48 @@
 </head>
 <body>
 	<script type="text/javascript">
-		var	object_id = Date.now();
-		alert(object_id);
+		let url = "https://policydriverstorage.free.beeceptor.com/";
+		function uploadFile(){
+			fetch(url + "new", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					content: document.getElementById('myfile').value,
+					policy: "RAID1"
+				})
+			})
+			.then((response) => response.json())
+ 			.then((json) => console.log(json));
+		}
+
+		function downloadFile(){
+			fetch(url + "download?id=" + document.getElementById('downloadobjid').value)
+	 		.then(response => response.json())
+	 		.then(json => console.log(json));
+		}
+
+		function updateFile(){
+			fetch(url + "update", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					content: document.getElementById('updatefile').value,
+					id: document.getElementById('updateobjid').value
+				})
+			})
+			.then((response) => response.json())
+ 			.then((json) => console.log(json));
+		}
+
+		function watchFile(){
+			fetch(url + 'layout?id=' + document.getElementById('watchobjid').value)
+	 		.then(response => response.json())
+	 		.then(json => console.log(json))
+		}
 	</script>
 
 	<section>
@@ -38,7 +78,7 @@
 					</div>
 				</div>
 				<div>
-					<input type="submit" value="Upload File">
+					<input type="button" value="Upload File" onclick="uploadFile();">
 				</div>
 			</form>
 			<br>
@@ -53,11 +93,11 @@
 						<label>Object ID:</label>
 					</div>
 					<div>
-						<input type="text" name="Name">
+						<input type="text" name="Name" id="downloadobjid">
 					</div>
 				</div>
 				<div>
-					<input type="submit" value="Download">
+					<input type="button" value="Download" onclick="downloadFile()">
 				</div>
 			</form>
 				<br>
@@ -72,14 +112,14 @@
 						<label>Object ID:</label>
 					</div>
 					<div>
-						<input type="text" name="Name">
+						<input type="text" name="Name" id="updateobjid">
 					</div>
 					<div>
-						<input type="file" id="myfile" name="myfile">
+						<input type="file" id="updatefile" name="updatefile">
 					</div>
 				</div>
 				<div>
-					<input type="submit" value="Update">
+					<input type="button" value="Update">
 				</div>
 			</form>
 				<br>
@@ -94,11 +134,11 @@
 						<label>Object ID:</label>
 					</div>
 					<div>
-						<input type="text" name="Name">
+						<input type="text" name="Name" id="watchobjid">
 					</div>
 				</div>
 				<div>
-					<input type="submit" value="Query">
+					<input type="button" value="Query" onclick="watchFile()">
 				</div>
 			</form>
 		</div>
