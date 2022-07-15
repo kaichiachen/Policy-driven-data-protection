@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  body {
+    @apply antialiased max-w-prose mx-auto my-40 overflow-y-scroll;
+    @apply bg-white text-black dark:bg-zinc-900 dark:text-white;
+  }
+
+  html {
+    color-scheme: light dark;
+  }
+  html.dark {
+    color-scheme: dark light;
+  }
+
+  h1 {
+    @apply font-bold text-4xl mb-10;
+  }
+
+  h2 {
+    @apply font-semibold text-2xl mb-4;
+  }
+
+  form {
+    @apply flex flex-col space-y-4 items-start mb-10;
+  }
+
+  form button[type$='submit'] {
+    @apply bg-blue-500 hover:bg-blue-400 text-white font-medium px-3 py-2 rounded text-sm;
+    @apply focus:ring-2 focus:outline-none;
+    @apply transition-[box-shadow,background-color];
+  }
+
+  form label {
+    @apply flex flex-col space-y-2 w-full;
+  }
+
+  form label span {
+    @apply font-semibold text-sm text-zinc-700 dark:text-zinc-300 select-none;
+  }
+
+  form input:not([type='file']) {
+    @apply bg-zinc-50 text-black dark:bg-zinc-800 dark:text-white;
+    @apply rounded-sm px-3 py-2 focus:ring-2 focus:outline-none;
+    @apply transition-shadow;
+  }
+
+  form select {
+    @apply bg-zinc-50 text-black rounded-sm p-2 dark:bg-zinc-800 dark:text-white;
+    @apply focus:ring-2 focus:outline-none transition-shadow;
+  }
+
+  form input[type='file'] {
+    @apply file:mr-4 cursor-pointer file:cursor-pointer;
+    @apply focus:ring-2 focus:outline-none;
+    @apply transition-shadow;
+  }
+
+  .theme-button {
+    @apply fixed right-0 bottom-0 mb-4 mr-4 block p-1 rounded-md opacity-75 hover:opacity-100;
+    @apply transition-[opacity,box-shadow] focus:ring-2 focus:outline-none;
+  }
+}
