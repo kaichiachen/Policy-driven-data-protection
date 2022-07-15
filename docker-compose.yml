@@ -9,3 +9,15 @@ services:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-backend:master"
     ports:
       - "1039:1039"
+  fileserver1:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-fileserver:master"
+    ports:
+      - "1040:1040"
+  fileserver2:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-fileserver:master"
+    ports:
+      - "1040:1040"
+  fileserver3:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-fileserver:master"
+    ports:
+      - "1040:1040"

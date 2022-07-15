@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: frontend
+    ports:
+      - "3000:3000"
+  backend:
+    build: backend
+    ports:
+      - "1039:1039"
+  fileserver1:
+    build: fileserver
+    ports:
+      - "1040:1040"
+  fileserver2:
+    build: fileserver
+    ports:
+      - "1041:1040"
+  fileserver3:
+    build: fileserver
+    ports:
+      - "1042:1040"
