@@ -9,15 +9,15 @@ services:
     build: backend
     ports:
       - "1039:1039"
-  fileserver1:
-    build: fileserver
+  objectserver1:
+    build: objectserver
     ports:
       - "1040:1040"
-  fileserver2:
-    build: fileserver
+  objectserver2:
+    build: objectserver
     ports:
       - "1041:1040"
-  fileserver3:
-    build: fileserver
+  objectserver3:
+    build: objectserver
     ports:
       - "1042:1040"

@@ -11,7 +11,7 @@ jobs:
     
     strategy:
       matrix:
-        folder: [frontend, backend, fileserver]
+        folder: [frontend, backend, objectserver]
 
     steps:
       - name: Checkout repository
