@@ -13,14 +13,17 @@ So, we would like to implement a policy-driven data protection system with the 
 
 ## Getting started
 
-All the components of this project are distributed via Docker images on the GitHub Container Registry.
+All the components of this project are distributed via Docker images on the GitHub Container Registry. We also utilize Docker Compose to unify containers in one app.
 
 ```bash
+# Use Docker Compose to run the whole app
+$ docker compose up
+
 # Run the frontend
-docker run -p 3000:3000 ghcr.io/kaichiachen/policy-driven-data-protection-frontend
+$ docker run -p 3000:3000 ghcr.io/kaichiachen/policy-driven-data-protection-frontend
 
 # Run the backend
-docker run -p 1039:1039 ghcr.io/kaichiachen/policy-driven-data-protection-backend
+$ docker run -p 1039:1039 ghcr.io/kaichiachen/policy-driven-data-protection-backend
 ```
 
 ## Screenshots

@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  frontend:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-frontend:master"
+    ports:
+      - "3000:3000"
+  backend:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-backend:master"
+    ports:
+      - "1039:1039"
