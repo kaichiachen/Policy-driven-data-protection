@@ -20,11 +20,11 @@ router.post("/new", async (ctx) => {
   }
 
   // Upload to file servers
-  const fileId = crypto.randomUUID();
+  const objectId = crypto.randomUUID();
 
   // Return response
   ctx.response.status = 200;
-  ctx.response.body = { "id": fileId };
+  ctx.response.body = { "id": objectId };
 });
 
 router.get("/download/:id", async (ctx) => {
@@ -54,7 +54,7 @@ router.put("/update/:objectId", (ctx) => {
 });
 
 router.put("/layout", (ctx) => {
-  const fileId = ctx.request.url.searchParams.get("id");
+  const objectId = ctx.request.url.searchParams.get("id");
 
   // Get the layout of the files
 
