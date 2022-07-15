@@ -10,3 +10,8 @@ So, we would like to implement a policy-driven data protection system with the 
 - A back-end to make sure we won't lose data if any computer/host is down
 - A back-end that users can upload and store objects regarding policies
 - A front-end page to let user upload and watch their data
+
+## Screenshots
+
+![Screenshot of frontend (dark)](/.github/assets/screenshot-dark.png#gh-dark-mode-only)
+![Screenshot of frontend (light)](/.github/assets/screenshot-light.png#gh-light-mode-only)
