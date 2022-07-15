@@ -5,31 +5,47 @@ services:
     build: frontend
     ports:
       - "3000:3000"
+    volumes:
+      - "~/test/frontend:/data"
   backend:
     build: backend
     ports:
       - "1039:1039"
+    volumes:
+      - "~/test/backend:/data"
   objectserver1:
     build: objectserver
     ports:
       - "1040:1040"
+    volumes:
+      - "~/test/objectserver1:/data"
   objectserver2:
     build: objectserver
     ports:
       - "1041:1040"
+    volumes:
+      - "~/test/objectserver2:/data"
   objectserver3:
     build: objectserver
     ports:
       - "1042:1040"
+    volumes:
+      - "~/test/objectserver3:/data"
   objectserver4:
     build: objectserver
     ports:
       - "1043:1040"
+    volumes:
+      - "~/test/objectserver4:/data"
   objectserver5:
     build: objectserver
     ports:
       - "1044:1040"
+    volumes:
+      - "~/test/objectserver5:/data"
   objectserver6:
     build: objectserver
     ports:
       - "1045:1040"
+    volumes:
+      - "~/test/objectserver6:/data"

@@ -1,21 +1,22 @@
-import { Application, Router } from "https://deno.land/x/oak@v10.6.0/mod.ts";
-import { z } from "https://deno.land/x/zod@v3.17.3/mod.ts";
+import { Application } from "https://deno.land/x/oak@v10.6.0/mod.ts";
+// import { z } from "https://deno.land/x/zod@v3.17.3/mod.ts";
 
 import { errorHandler, timingMiddleware } from "./middleware.ts";
 
-const router = new Router();
-
-router.get("/", (ctx) => {
-  ctx.response.body = "Hello world";
-  ctx.response.status = 200;
-});
-
 const app = new Application();
+
+app.use(async (ctx, next) => {
+  try {
+    await ctx.send({
+      root: `/data`,
+    });
+  } catch {
+    await next();
+  }
+});
 
 app.use(errorHandler);
 app.use(timingMiddleware);
-app.use(router.routes());
-app.use(router.allowedMethods({ throw: true }));
 
 app.addEventListener(
   "listen",
