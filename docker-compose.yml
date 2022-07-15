@@ -21,3 +21,15 @@ services:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
     ports:
       - "1042:1040"
+  objectserver4:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
+    ports:
+      - "1043:1040"
+  objectserver5:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
+    ports:
+      - "1044:1040"
+  objectserver6:
+    image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
+    ports:
+      - "1045:1040"

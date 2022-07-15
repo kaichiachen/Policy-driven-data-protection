@@ -21,3 +21,15 @@ services:
     build: objectserver
     ports:
       - "1042:1040"
+  objectserver4:
+    build: objectserver
+    ports:
+      - "1043:1040"
+  objectserver5:
+    build: objectserver
+    ports:
+      - "1044:1040"
+  objectserver6:
+    build: objectserver
+    ports:
+      - "1045:1040"
