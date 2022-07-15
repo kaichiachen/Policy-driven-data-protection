@@ -22,9 +22,7 @@
 		}
 
 		function downloadFile(){
-			fetch(url + "download?id=" + document.getElementById('downloadobjid').value)
-	 		.then(response => response.json())
-	 		.then(json => console.log(json));
+			window.location.href = url + "download?id=" + document.getElementById('downloadobjid').value;
 		}
 
 		function updateFile(){
