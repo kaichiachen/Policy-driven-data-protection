@@ -9,27 +9,29 @@ services:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-backend:master"
     ports:
       - "1039:1039"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver1:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
-    ports:
-      - "1040:1040"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver2:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
-    ports:
-      - "1041:1040"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver3:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
-    ports:
-      - "1042:1040"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver4:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
-    ports:
-      - "1043:1040"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver5:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
-    ports:
-      - "1044:1040"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver6:
     image: "ghcr.io/kaichiachen/policy-driven-data-protection-objectserver:master"
-    ports:
-      - "1045:1040"
+    environment:
+      - OBJECTSERVER_KEY

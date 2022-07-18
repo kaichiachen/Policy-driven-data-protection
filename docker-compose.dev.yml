@@ -13,39 +13,41 @@ services:
       - "1039:1039"
     volumes:
       - "~/test/backend:/data"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver1:
     build: objectserver
-    ports:
-      - "1040:1040"
     volumes:
       - "~/test/objectserver1:/data"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver2:
     build: objectserver
-    ports:
-      - "1041:1040"
     volumes:
       - "~/test/objectserver2:/data"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver3:
     build: objectserver
-    ports:
-      - "1042:1040"
     volumes:
       - "~/test/objectserver3:/data"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver4:
     build: objectserver
-    ports:
-      - "1043:1040"
     volumes:
       - "~/test/objectserver4:/data"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver5:
     build: objectserver
-    ports:
-      - "1044:1040"
     volumes:
       - "~/test/objectserver5:/data"
+    environment:
+      - OBJECTSERVER_KEY
   objectserver6:
     build: objectserver
-    ports:
-      - "1045:1040"
     volumes:
       - "~/test/objectserver6:/data"
+    environment:
+      - OBJECTSERVER_KEY

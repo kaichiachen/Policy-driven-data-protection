@@ -12,21 +12,26 @@ const zz = z.object({
   content: z.string(),
 });
 
+app.use(errorHandler);
+app.use(timingMiddleware);
+
 app.use(async (ctx, next) => {
+  console.log(ctx.request.url.pathname);
+
   if (ctx.request.url.pathname !== "/upload") {
     await next();
     return;
   }
+
   if (ctx.request.method !== "POST") {
-    await next();
+    ctx.throw(500);
     return;
   }
   if (
     ctx.request.headers.get("Authorization") !==
       Deno.env.get("OBJECTSERVER_KEY")
   ) {
-    ctx.response.body = { "error": "Unauthorized" };
-    ctx.response.status = 403;
+    ctx.throw(403);
     return;
   }
 
@@ -34,14 +39,20 @@ app.use(async (ctx, next) => {
   const p = zz.safeParse(b);
 
   if (!p.success) {
-    ctx.response.body = { error: "Bad request" };
-    ctx.response.status = 400;
+    ctx.throw(400);
     return;
   }
 
   const d = p.data;
 
-  await Deno.writeFile(join("/data", d.objectId), decode(d.content));
+  try {
+    await Deno.writeFile(join("/data", d.objectId), decode(d.content));
+    ctx.response.body = { ok: true };
+    ctx.response.status = 200;
+  } catch (e) {
+    console.error(e);
+    ctx.throw(500);
+  }
 });
 
 app.use(async (ctx, next) => {
@@ -53,9 +64,6 @@ app.use(async (ctx, next) => {
     await next();
   }
 });
-
-app.use(errorHandler);
-app.use(timingMiddleware);
 
 app.addEventListener(
   "listen",
