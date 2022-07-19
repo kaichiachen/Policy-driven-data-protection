@@ -1,4 +1,9 @@
-type DataList = { id: string; policy: "RAID0" | "RAID1" }[];
+interface Data {
+  id: string;
+  policy: "RAID0" | "RAID1";
+  filename: string;
+  servers: number[];
+}
 
 export const ensureFileData = async () => {
   try {
@@ -12,14 +17,16 @@ export const ensureFileData = async () => {
   }
 };
 
-export const addFileData = async (id: string, policy: "RAID0" | "RAID1") => {
+export const addFileData = async (
+  inputData: Data,
+) => {
   await ensureFileData();
 
   const data = await Deno.readTextFile("/data/data.json").then((txt) =>
     JSON.parse(txt)
-  ) as DataList;
+  ) as Data[];
 
-  data.push({ id, policy });
+  data.push(inputData);
 
   await Deno.writeTextFile("/data/data.json", JSON.stringify(data));
 };
@@ -29,10 +36,10 @@ export const readFileData = async (id: string) => {
 
   const data = await Deno.readTextFile("/data/data.json").then((txt) =>
     JSON.parse(txt)
-  ) as DataList;
+  ) as Data[];
 
   const a = data.filter((r) => r.id === id);
 
   if (a.length === 0) return null;
-  return a[0].policy;
+  return a[0];
 };
