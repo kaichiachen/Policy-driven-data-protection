@@ -118,12 +118,25 @@ router.put("/update/:objectId", (ctx) => {
   ctx.response.body = { ok: true };
 });
 
-router.put("/layout", (ctx) => {
-  const objectId = ctx.request.url.searchParams.get("id");
+router.put("/layout", async (ctx) => {
+  const objectId = ctx.request.url.searchParams.get("objectId");
+  if (!objectId) {
+    ctx.response.body = { error: "Bad Request" };
+    ctx.response.status = 400;
+    return;
+  }
+
+  const pol = await readFileData(objectId);
+
+  if (!pol) {
+    ctx.response.body = { error: "Not found" };
+    ctx.response.status = 404;
+    return;
+  }
 
   // Get the layout of the files
 
-  ctx.response.body = { layout: ["1.2.3.4", "5.6.7.8"] };
+  ctx.response.body = { layout: pol.servers };
 });
 
 const app = new Application();

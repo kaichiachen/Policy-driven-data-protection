@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// fef9251f-dabc-4312-89c3-9ab1a7d01f37
 const objectId = ref('');
 
 const uploadSubmit = async (ev: Event) => {
