@@ -3,6 +3,7 @@ import ThemeSwitcher from './components/ThemeSwitcher.vue';
 import Upload from './components/Upload.vue';
 import Download from './components/Download.vue';
 import QueryLayout from './components/QueryLayout.vue';
+import Update from './components/Update.vue';
 </script>
 
 <template>
@@ -15,14 +16,7 @@ import QueryLayout from './components/QueryLayout.vue';
   <Download />
 
   <h2>Update File</h2>
-  <form>
-    <label>
-      <span>Object ID</span>
-      <input type="text" name="object_id" />
-    </label>
-    <input type="file" name="file" />
-    <button type="submit">Update</button>
-  </form>
+  <Update />
 
   <h2>Query Layout</h2>
   <QueryLayout />

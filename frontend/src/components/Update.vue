@@ -2,15 +2,13 @@
 import { ref } from 'vue';
 import { bytesToBase64 } from 'byte-base64';
 
-const policy = ref('RAID0');
+const idRef = ref('');
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const uploadSubmit = async (e: Event) => {
   e.preventDefault();
   const f = fileInput.value?.files?.item(0);
   if (!f) return;
-
-  const policyV = policy.value;
 
   let data: number[] = [];
   const fileData = f.stream().getReader();
@@ -26,17 +24,20 @@ const uploadSubmit = async (e: Event) => {
 
   const b64 = bytesToBase64(data);
 
-  await fetch('http://localhost:1039/new', {
-    method: 'POST',
-    body: JSON.stringify({ content: b64, policy: policyV, filename: f.name }),
+  await fetch('http://localhost:1039/update/' + idRef.value, {
+    method: 'PUT',
+    body: JSON.stringify({
+      content: b64,
+      filename: f.name,
+    }),
     headers: { 'content-type': 'application/json' },
   })
     .then(async (r) => {
       if (!r.ok) throw new Error(await r.text());
       return r.json();
     })
-    .then((data) => {
-      prompt('Object ID:', data.id);
+    .then((_data) => {
+      alert('OK');
     });
 };
 </script>
@@ -49,12 +50,8 @@ const uploadSubmit = async (e: Event) => {
     </label>
 
     <label>
-      <span>Policy</span>
-
-      <select v-model="policy">
-        <option value="RAID0">RAID0</option>
-        <option value="RAID1">RAID1</option>
-      </select>
+      <span>Object ID</span>
+      <input type="text" name="object_id" v-model="idRef" />
     </label>
 
     <button type="submit">Upload File</button>

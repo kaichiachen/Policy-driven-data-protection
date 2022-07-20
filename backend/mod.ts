@@ -115,12 +115,49 @@ router.get("/download/:id", async (ctx) => {
   );
 });
 
-router.put("/update/:objectId", (ctx) => {
-  const { objectId } = ctx.params;
+const updateData = z.object({
+  content: z.string(),
+  filename: z.string(),
+});
 
-  // Update the file
+router.put("/update/:objectId", async (ctx) => {
+  const { objectId } = ctx.params;
+  const parsedBody = updateData.safeParse(
+    await ctx.request.body({ type: "json" }).value,
+  );
+
+  if (!parsedBody.success) {
+    ctx.throw(400);
+    return;
+  }
+
+  if (!objectId) {
+    ctx.throw(400);
+    return;
+  }
+
+  const pol = await readFileData(objectId);
+
+  if (!pol) {
+    ctx.response.body = { error: "Not found" };
+    ctx.response.status = 404;
+    return;
+  }
+
+  pol.filename = parsedBody.data.filename;
+
+  await addFileData(pol);
+
+  for (const server of pol.servers) {
+    await upload(
+      pol.id,
+      parsedBody.data.content,
+      `http://objectserver${server}:1040`,
+    );
+  }
 
   ctx.response.body = { ok: true };
+  ctx.response.status = 200;
 });
 
 router.get("/layout", async (ctx) => {

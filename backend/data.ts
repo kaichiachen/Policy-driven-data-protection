@@ -27,6 +27,10 @@ export const addFileData = async (
     JSON.parse(txt)
   ) as Data[];
 
+  if (data.filter((zz) => zz.id === inputData.id).length > 0) {
+    data.splice(data.findIndex((zz) => zz.id === inputData.id));
+  }
+
   data.push(inputData);
 
   await Deno.writeTextFile("/data/data.json", JSON.stringify(data));
