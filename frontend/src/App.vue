@@ -2,6 +2,7 @@
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
 import Upload from './components/Upload.vue';
 import Download from './components/Download.vue';
+import QueryLayout from './components/QueryLayout.vue';
 </script>
 
 <template>
@@ -24,14 +25,7 @@ import Download from './components/Download.vue';
   </form>
 
   <h2>Query Layout</h2>
-  <form>
-    <label>
-      <span>Object ID</span>
-      <input type="text" name="object_id" />
-    </label>
-
-    <button type="submit">Query</button>
-  </form>
+  <QueryLayout />
 
   <ThemeSwitcher />
 </template>
