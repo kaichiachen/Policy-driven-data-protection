@@ -3,6 +3,7 @@ interface Data {
   policy: "RAID0" | "RAID1";
   filename: string;
   servers: number[];
+  version: "v0";
 }
 
 export const ensureFileData = async () => {

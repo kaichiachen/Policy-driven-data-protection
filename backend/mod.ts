@@ -5,6 +5,7 @@ import { z } from "https://deno.land/x/zod@v3.17.3/mod.ts";
 
 import { getRandomInt } from "./utils.ts";
 import { errorHandler, timingMiddleware } from "./middleware.ts";
+import * as config from "./_config.ts";
 
 const router = new Router();
 
@@ -43,12 +44,15 @@ router.post("/new", async (ctx) => {
   let servers: number[] = [];
 
   if (parsedBody.data.policy === "RAID0") {
+    const randomServer = getRandomInt(1, 6);
+
     await upload(
       objectId,
       parsedBody.data.content,
-      "http://objectserver1:1040",
+      `http://objectserver${randomServer}:1040`,
     );
-    servers.push(1);
+
+    servers.push(randomServer);
   } else {
     const uploadToRandomServer = async () => {
       const serverId = getRandomInt(1, 6);
@@ -62,9 +66,9 @@ router.post("/new", async (ctx) => {
       servers.push(serverId);
     };
 
-    await uploadToRandomServer();
-    await uploadToRandomServer();
-    await uploadToRandomServer();
+    for (let i = 1; i <= config.REPLICAS_RAID1; i++) {
+      await uploadToRandomServer();
+    }
   }
 
   await addFileData({
@@ -72,6 +76,7 @@ router.post("/new", async (ctx) => {
     policy: parsedBody.data.policy,
     filename: parsedBody.data.filename,
     servers,
+    version: "v0",
   });
 
   ctx.response.status = 200;
