@@ -1,5 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak@v10.6.0/mod.ts";
 import { addFileData, readFileData } from "./data.ts";
+import { encode } from "https://deno.land/std@0.149.0/encoding/base64.ts";
 import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import { z } from "https://deno.land/x/zod@v3.17.3/mod.ts";
 
@@ -41,7 +42,7 @@ router.post("/new", async (ctx) => {
   // Upload to file servers
   const objectId = crypto.randomUUID();
 
-  let servers: number[] = [];
+  const servers: number[] = [];
 
   if (parsedBody.data.policy === "RAID0") {
     const randomServer = getRandomInt(1, 6);
@@ -93,15 +94,42 @@ router.get("/download/:id", async (ctx) => {
     return;
   }
 
-  const fileUrl = `http://objectserver${
-    pol.servers[Math.floor(Math.random() * pol.servers.length)]
-  }:1040/${pol.id}`;
+  const firstServer =
+    pol.servers[Math.floor(Math.random() * pol.servers.length)];
+  const fileUrl = `http://objectserver${firstServer}:1040/${pol.id}`;
 
   console.log("Downloading", fileUrl);
 
-  const bodyStream = await fetch(fileUrl).then((r) => {
-    if (!r.ok) throw new Error("File download failed");
-    return r;
+  const bodyStream = await fetch(fileUrl).then(async (r) => {
+    if (!r.ok) {
+      const r = fetch(
+        `http://objectserver${
+          pol.servers[Math.floor(Math.random() * pol.servers.length)]
+        }:1040/${pol.id}`,
+      );
+
+      const b = await r.then((r) => r.blob()).then((blob) =>
+        blob.arrayBuffer()
+      );
+
+      const serverId = getRandomInt(1, 6);
+
+      await upload(
+        pol.id,
+        encode(b),
+        `http://objectserver${serverId}:1040`,
+      );
+
+      pol.servers = [
+        ...pol.servers.filter((ss) => ss !== firstServer),
+        serverId,
+      ];
+      await addFileData(pol);
+
+      return r;
+    } else {
+      return r;
+    }
   }).then((r) => {
     const b = r.body;
     if (!b) throw new Error("File download failed");
@@ -139,8 +167,7 @@ router.put("/update/:objectId", async (ctx) => {
   const pol = await readFileData(objectId);
 
   if (!pol) {
-    ctx.response.body = { error: "Not found" };
-    ctx.response.status = 404;
+    ctx.throw(400);
     return;
   }
 
