@@ -54,6 +54,8 @@ const uploadSubmit = async (e: Event) => {
       <select v-model="policy">
         <option value="RAID0">RAID0</option>
         <option value="RAID1">RAID1</option>
+        <option value="RAID5">RAID5</option>
+        <option value="RAID6">RAID6</option>
       </select>
     </label>
 
