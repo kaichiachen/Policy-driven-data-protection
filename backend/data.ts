@@ -57,9 +57,9 @@ export const findFileData = async (server_id: number) => {
     JSON.parse(txt)
   ) as Data[];
 
-  const a = data.filter((r) => r.servers.indexOf(server_id) >= 0 );
+  const data_list = data.filter((r) => r.servers.indexOf(server_id) >= 0 );
 
   // if (a.length === 0) return null;x 
-  return a;
+  return data_list;
 };
 

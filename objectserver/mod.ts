@@ -47,7 +47,6 @@ app.use(async (ctx, next) => {
 
   const d = p.data;
 
-  // console.log("+++++++", decode(d.content))
 
   try {
     await Deno.writeFile(join("/data", d.objectId), decode(d.content));

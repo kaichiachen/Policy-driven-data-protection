@@ -169,7 +169,7 @@ router.post("/new", async (ctx) => {
     var P1 = xor.encode( A1, B1)
     var P2 = xor.encode( A2, B2)
     var Q1 = xor.encode( A1, B2)
-    var Q2 = xor.encode( A2, P2)
+    var Q2 = xor.encode( B1, P2)
 
     var A = A1.concat(A2)
     var B = B1.concat(B2)
@@ -221,6 +221,7 @@ router.post("/new", async (ctx) => {
       servers,
       version: "v0",
       orders: [servers[0], servers[1], servers[2], servers[3]],
+      lengthQ1: Q1.length,
     })
   }
   ctx.response.status = 200;
@@ -282,8 +283,6 @@ router.get("/download/:id", async (ctx) => {
 
     const recovered_content = encode(A).concat(encode(B));
 
-    console.log("******", decode(recovered_content));
-
     ctx.response.body = decode(recovered_content);
     ctx.response.headers.set(
       "Content-Disposition",
@@ -315,8 +314,6 @@ router.get("/download/:id", async (ctx) => {
     var B2 = encode(B).slice(piece, encode(B).length);
 
     const recovered_content = A1.concat(B1).concat(A2).concat(B2);
-
-    console.log("******", decode(recovered_content));
 
     ctx.response.body = decode(recovered_content);
     ctx.response.headers.set(
@@ -553,7 +550,6 @@ cron('*/20 * * * * *', async () => {
               const r_B = fetch(`http://objectserver${pol[j].orders[1]}:1040/${pol[j].id}`)
               const r_P = fetch(`http://objectserver${pol[j].orders[2]}:1040/${pol[j].id}`)
               const r_Q = fetch(`http://objectserver${pol[j].orders[3]}:1040/${pol[j].id}`)
-              console.log((await r_B).ok, (await r_P).ok, (await r_Q).ok);
 
               if ((await r_B).ok && (await r_P).ok){
                 const B = await r_B.then( (r_B) => r_B.blob()).then( (blob) =>
@@ -572,8 +568,8 @@ cron('*/20 * * * * *', async () => {
 
                 var A1 = xor.decode(B1, P1);
                 var A2 = xor.decode(B2, P2);
-                var A = A1.concat(A2);
 
+                var A = A1.concat(A2);
                 await upload(
                   pol[j].id,
                   A,
@@ -586,32 +582,429 @@ cron('*/20 * * * * *', async () => {
                   servers: pol[j].servers,
                   version: "v0",
                   orders: pol[j].orders,
-                });
-                
+                  lengthQ1: pol[j].lengthQ1,
+                }); 
+            
               } else if ((await r_B).ok && (await r_Q).ok){
+                const B = await r_B.then( (r_B) => r_B.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const Q = await r_Q.then( (r_Q) => r_Q.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const piece_B = encode(B).length/2;
+                const piece_Q = pol[j].lengthQ1;
+
+                var B1 = encode(B).slice(0, piece_B);
+                var B2 = encode(B).slice(piece_B, encode(B).length);
+                var Q1 = encode(Q).slice(0, piece_Q);
+                var Q2 = encode(Q).slice(piece_Q, encode(Q).length);
+
+                var P2 = xor.decode(B1, Q2);
+                var A2 = xor.decode(B2, P2);
+                var A1 = xor.decode(B2, Q1);
+
+                var A = A1.concat(A2);
+                await upload(
+                  pol[j].id,
+                  A,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                }); 
                 
               } else if ((await r_P).ok && (await r_Q).ok){
+                const P = await r_P.then( (r_P) => r_P.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const Q = await r_Q.then( (r_Q) => r_Q.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                
+                const piece_P = encode(P).length/2;
+                const piece_Q = pol[j].lengthQ1;
 
-              }
+                var P1 = encode(P).slice(0, piece_P);
+                var P2 = encode(P).slice(piece_P, encode(P).length);
+                var Q1 = encode(Q).slice(0, piece_Q);
+                var Q2 = encode(Q).slice(piece_Q, encode(Q).length);
+                
+                var B1 = xor.decode(P2, Q2);
+                var A1 = xor.decode(B1, P1);
+                var B2 = xor.decode(A1, Q1);
+                var A2 = xor.decode(B2, P2);
+            
+                var A = A1.concat(A2);
+                await upload(
+                  pol[j].id,
+                  A,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                }); 
+              }              
 
             } else if (order_index == 1){
               const r_A = fetch(`http://objectserver${pol[j].orders[0]}:1040/${pol[j].id}`)
               const r_P = fetch(`http://objectserver${pol[j].orders[2]}:1040/${pol[j].id}`)
               const r_Q = fetch(`http://objectserver${pol[j].orders[3]}:1040/${pol[j].id}`)
+
+              if ((await r_A).ok && (await r_P).ok){
+                const A = await r_A.then( (r_A) => r_A.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const P = await r_P.then( (r_P) => r_P.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+
+                const piece_A = encode(A).length/2;
+                const piece_P = encode(P).length/2;
+
+                var A1 = encode(A).slice(0, piece_A);
+                var A2 = encode(A).slice(piece_A, encode(A).length);
+                var P1 = encode(P).slice(0, piece_P);
+                var P2 = encode(P).slice(piece_P, encode(P).length);
+
+                var B1 = xor.decode(A1, P1);
+                var B2 = xor.decode(A2, P2);
+
+                var B = B1.concat(B2);
+                await upload(
+                  pol[j].id,
+                  B,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                }); 
+
+              } else if ((await r_A).ok && (await r_Q).ok){
+                const A = await r_A.then( (r_A) => r_A.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const Q = await r_Q.then( (r_Q) => r_Q.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+
+                const piece_A = encode(A).length/2;
+                const piece_Q = pol[j].lengthQ1;
+
+                var A1 = encode(A).slice(0, piece_A);
+                var A2 = encode(A).slice(piece_A, encode(A).length);
+                var Q1 = encode(Q).slice(0, piece_Q);
+                var Q2 = encode(Q).slice(piece_Q, encode(Q).length);
+
+                var B2 = xor.decode(A1, Q1);
+                var P2 = xor.encode(A2, B2);
+                var B1 = xor.decode(P2, Q2);
+                
+                var B = B1.concat(B2);
+                await upload(
+                  pol[j].id,
+                  B,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });
+
+              } else if ((await r_P).ok && (await r_Q).ok){
+                const P = await r_P.then( (r_P) => r_P.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const Q = await r_Q.then( (r_Q) => r_Q.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                
+                const piece_P = encode(P).length/2;
+                const piece_Q = pol[j].lengthQ1;
+
+                var P1 = encode(P).slice(0, piece_P);
+                var P2 = encode(P).slice(piece_P, encode(P).length);
+                var Q1 = encode(Q).slice(0, piece_Q);
+                var Q2 = encode(Q).slice(piece_Q, encode(Q).length);
+
+                var B1 = xor.decode(P2, Q2);
+                var A1 = xor.decode(B1, P1);
+                var B2 = xor.decode(A1, Q1);
+                var A2 = xor.decode(B2, P2);
+
+                var B = B1.concat(B2);
+                await upload(
+                  pol[j].id,
+                  B,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });
+              }
             } else if (order_index == 2){
               const r_A = fetch(`http://objectserver${pol[j].orders[0]}:1040/${pol[j].id}`)
               const r_B = fetch(`http://objectserver${pol[j].orders[1]}:1040/${pol[j].id}`)
               const r_Q = fetch(`http://objectserver${pol[j].orders[3]}:1040/${pol[j].id}`)
+              if ((await r_A).ok && (await r_B).ok){
+                const A = await r_A.then( (r_A) => r_A.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const B = await r_B.then( (r_B) => r_B.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+
+                const piece_A = encode(A).length/2;
+                const piece_B = encode(B).length/2;
+
+                var A1 = encode(A).slice(0, piece_A);
+                var A2 = encode(A).slice(piece_A, encode(A).length);
+                var B1 = encode(B).slice(0, piece_B);
+                var B2 = encode(B).slice(piece_B, encode(B).length);
+
+                var P1 = xor.encode(A1, B1);
+                var P2 = xor.encode( A2, B2)
+                var P = P1.concat(P2);
+
+                await upload(
+                  pol[j].id,
+                  P,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });
+
+
+              } else if ((await r_A).ok && (await r_Q).ok){
+                const A = await r_A.then( (r_A) => r_A.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const Q = await r_Q.then( (r_Q) => r_Q.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+
+                const piece_A = encode(A).length/2;
+                const piece_Q = pol[j].lengthQ1;
+          
+                var A1 = encode(A).slice(0, piece_A);
+                var A2 = encode(A).slice(piece_A, encode(A).length);
+                var Q1 = encode(Q).slice(0, piece_Q);
+                var Q2 = encode(Q).slice(piece_Q, encode(Q).length);
+
+                var B2 = xor.decode(A1, Q1);
+                var P2 = xor.encode(A2, B2);
+                var B1 = xor.decode(P2, Q2);
+                var P1 = xor.encode(A1, B1);
+
+                var P = P1.concat(P2);
+                await upload(
+                  pol[j].id,
+                  P,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });
+
+              } else if ((await r_B).ok && (await r_Q).ok){
+                const B = await r_B.then( (r_B) => r_B.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const Q = await r_Q.then( (r_Q) => r_Q.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const piece_B = encode(B).length/2;
+                const piece_Q = pol[j].lengthQ1;
+
+                var B1 = encode(B).slice(0, piece_B);
+                var B2 = encode(B).slice(piece_B, encode(B).length);
+                var Q1 = encode(Q).slice(0, piece_Q);
+                var Q2 = encode(Q).slice(piece_Q, encode(Q).length);
+
+                var P2 = xor.decode(B1, Q2);
+                var A2 = xor.decode(B2, P2);
+                var A1 = xor.decode(B2, Q1);
+                var P1 = xor.encode(A1, B1);
+
+                var P = P1.concat(P2);
+                await upload(
+                  pol[j].id,
+                  P,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });
+
+              }
 
             } else {
               const r_A = fetch(`http://objectserver${pol[j].orders[0]}:1040/${pol[j].id}`)
               const r_B = fetch(`http://objectserver${pol[j].orders[1]}:1040/${pol[j].id}`)
               const r_P = fetch(`http://objectserver${pol[j].orders[2]}:1040/${pol[j].id}`)
+
+              if ((await r_A).ok && (await r_B).ok){
+                const A = await r_A.then( (r_A) => r_A.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const B = await r_B.then( (r_B) => r_B.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+
+                const piece_A = encode(A).length/2;
+                const piece_B = encode(B).length/2;
+
+                var A1 = encode(A).slice(0, piece_A);
+                var A2 = encode(A).slice(piece_A, encode(A).length);
+                var B1 = encode(B).slice(0, piece_B);
+                var B2 = encode(B).slice(piece_B, encode(B).length);
+
+                var P1 = xor.encode(A1, B1);
+                var P2 = xor.encode(A2, B2);
+                var Q1 = xor.encode(A1, B2);
+                var Q2 = xor.encode(B1, P2);
+
+                var Q = Q1.concat(Q2)
+
+                await upload(
+                  pol[j].id,
+                  Q,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });
+
+              } else if ((await r_A).ok && (await r_P).ok){
+                const A = await r_A.then( (r_A) => r_A.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const P = await r_P.then( (r_P) => r_P.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+
+                const piece_A = encode(A).length/2;
+                const piece_P = encode(P).length/2;
+
+                var A1 = encode(A).slice(0, piece_A);
+                var A2 = encode(A).slice(piece_A, encode(A).length);
+                var P1 = encode(P).slice(0, piece_P);
+                var P2 = encode(P).slice(piece_P, encode(P).length);
+
+                var B1 = xor.decode(A1, P1);
+                var B2 = xor.decode(A2, P2);
+                var Q1 = xor.encode(A1, B2);
+                var Q2 = xor.encode(B1, P2);
+
+                var Q = Q1.concat(Q2);
+                await upload(
+                  pol[j].id,
+                  Q,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });
+
+              } else if ((await r_B).ok && (await r_P).ok){
+                const B = await r_B.then( (r_B) => r_B.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const P = await r_P.then( (r_P) => r_P.blob()).then( (blob) =>
+                  blob.arrayBuffer()
+                );
+                const piece_B = encode(B).length/2;
+                const piece_P = encode(P).length/2;
+
+                var B1 = encode(B).slice(0, piece_B);
+                var B2 = encode(B).slice(piece_B, encode(B).length);
+                var P1 = encode(P).slice(0, piece_P);
+                var P2 = encode(P).slice(piece_P, encode(P).length);
+
+                var A1 = xor.decode(B1, P1);
+                var A2 = xor.decode(B2, P2);
+                var Q1 = xor.encode(A1, B2);
+                var Q2 = xor.encode(B1, P2);
+
+                var Q = Q1.concat(Q2);
+                await upload(
+                  pol[j].id,
+                  Q,
+                  `http://objectserver${recover_server_id}:1040`
+                );
+                await addFileData({
+                  id: pol[j].id,
+                  policy: pol[j].policy,
+                  filename: pol[j].filename,
+                  servers: pol[j].servers,
+                  version: "v0",
+                  orders: pol[j].orders,
+                  lengthQ1: pol[j].lengthQ1,
+                });     
+              }
             }
           }
         }
-      
-        // console.log(pol)
         console.log("Server", i, "repaired");
         continue;
       }
