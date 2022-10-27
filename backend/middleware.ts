@@ -2,7 +2,7 @@ import {
   isHttpError,
   type Middleware,
   Status,
-} from "https://deno.land/x/oak@v10.6.0/mod.ts";
+} from "https://deno.land/x/oak/mod.ts";
 
 export const errorHandler: Middleware = async (ctx, next) => {
   try {

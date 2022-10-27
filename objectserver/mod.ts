@@ -1,4 +1,4 @@
-import { Application } from "https://deno.land/x/oak@v10.6.0/mod.ts";
+import { Application } from "https://deno.land/x/oak/mod.ts";
 import { join } from "https://deno.land/std@0.148.0/path/mod.ts";
 import { decode } from "https://deno.land/std@0.148.0/encoding/base64.ts";
 import { z } from "https://deno.land/x/zod@v3.17.3/mod.ts";
@@ -16,7 +16,9 @@ app.use(errorHandler);
 app.use(timingMiddleware);
 
 app.use(async (ctx, next) => {
-  console.log(ctx.request.url.pathname);
+  if (ctx.request.url.pathname !== "/flag"){
+    console.log(ctx.request.url.pathname);
+  }
 
   if (ctx.request.url.pathname !== "/upload") {
     await next();
@@ -44,6 +46,7 @@ app.use(async (ctx, next) => {
   }
 
   const d = p.data;
+
 
   try {
     await Deno.writeFile(join("/data", d.objectId), decode(d.content));
